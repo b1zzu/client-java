@@ -60,7 +60,7 @@ public class LoggingContext {
 	@Deprecated
 	public static final int DEFAULT_BUFFER_SIZE = DEFAULT_LOG_BATCH_SIZE;
 
-	static final ThreadLocal<Deque<LoggingContext>> CONTEXT_THREAD_LOCAL = ThreadLocal.withInitial(ArrayDeque::new);
+	static final Deque<LoggingContext> CONTEXTS = new ArrayDeque<>();
 
 	/**
 	 * Initializes new logging context and attaches it to current thread
@@ -75,7 +75,7 @@ public class LoggingContext {
 	public static LoggingContext init(Maybe<String> launchUuid, Maybe<String> itemUuid, final ReportPortalClient client,
 			Scheduler scheduler, ListenerParameters parameters) {
 		LoggingContext context = new LoggingContext(launchUuid, itemUuid, client, scheduler, parameters);
-		CONTEXT_THREAD_LOCAL.get().push(context);
+		CONTEXTS.push(context);
 		return context;
 	}
 
@@ -110,7 +110,7 @@ public class LoggingContext {
 		params.setBatchLogsSize(batchLogsSize);
 		params.setConvertImage(convertImages);
 		LoggingContext context = new LoggingContext(launchUuid, itemUuid, client, scheduler, params);
-		CONTEXT_THREAD_LOCAL.get().push(context);
+		CONTEXTS.push(context);
 		return context;
 	}
 
@@ -120,7 +120,7 @@ public class LoggingContext {
 	 * @return Waiting queue to be able to track request sending completion
 	 */
 	public static Completable complete() {
-		final LoggingContext loggingContext = CONTEXT_THREAD_LOCAL.get().poll();
+		final LoggingContext loggingContext = CONTEXTS.poll();
 		if (null != loggingContext) {
 			return loggingContext.completed();
 		} else {
