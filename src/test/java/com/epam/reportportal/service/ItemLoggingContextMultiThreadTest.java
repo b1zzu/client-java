@@ -25,6 +25,7 @@ import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -123,6 +124,7 @@ public class ItemLoggingContextMultiThreadTest {
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
+	@Disabled("The logger context is now global")
 	public void test_main_and_other_threads_have_different_logging_contexts() throws InterruptedException {
 		// Main thread starts launch and suite
 		final Launch launch = rp.newLaunch(standardLaunchRequest(PARAMS));
